@@ -3,7 +3,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { X, Gift, Star, Clock, ArrowRight } from "lucide-react";
 import confetti from "canvas-confetti";
-import { initMixpanel } from "@/lib/mixpanelClient";
 import { useRouter } from "next/navigation";
 
 const OfferPopupCard = () => {
@@ -50,7 +49,7 @@ const OfferPopupCard = () => {
   }, []);
 
   const handleClaimOffer = () => {
-    initMixpanel();
+    
     window.location.href = "https://pages.razorpay.com/stores/st_QD6JmHuMK8AMiy";
     confetti({
       particleCount: 120,

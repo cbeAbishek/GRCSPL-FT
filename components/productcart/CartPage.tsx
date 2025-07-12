@@ -189,6 +189,26 @@ const CartPage: React.FC<CartPageProps> = ({
             >
               <span>Proceed to Checkout</span>
             </button>
+            <button
+              onClick={() => {
+                const cartDetails = cart.map(item => 
+                  `${item.product.name} (${item.product.category}) - Qty: ${item.quantity} - ₹${item.product.discountPrice} each`
+                ).join('\n');
+                
+                const message = `Hi! I would like to enquire about the following products:\n\n${cartDetails}\n\nTotal Amount: ₹${getCartTotal().toFixed(2)}\n\nPlease provide more details.`;
+                
+                const whatsappUrl = `https://api.whatsapp.com/send/?phone=919566372450&text=${encodeURIComponent(message)}`;
+                window.open(whatsappUrl, '_blank');
+              }}
+              className="w-full mt-3 bg-green-600 text-white py-3 rounded-xl font-semibold hover:bg-green-700 transition-all duration-300 flex items-center justify-center space-x-2"
+            >
+              <img
+                src="/WhatsApp.Webp"
+                alt="WhatsApp Icon"
+                className="w-7 h-7"
+              />
+              <span>Enquire on WhatsApp</span>
+            </button>
           </div>
         </div>
       )}
