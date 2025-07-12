@@ -184,7 +184,7 @@ const productsRaw = [
       code: "HN1008",
       mrp: 220.0,
       weight: 500,
-      discountPrice: 140.0,
+      discountPrice: 100.0,
       businessValue: 48,
       rating: 4.8,
       reviews: 528,
@@ -786,12 +786,6 @@ const ProductGrid = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center space-x-4">
-              <button
-                onClick={() => setCurrentPage("products")}
-                className="text-2xl font-bold text-[#39b54b] hover:text-[#2da03e] transition-colors"
-              >
-                GRCSPL Store
-              </button>
               {currentPage !== "products" && (
                 <button
                   onClick={() =>

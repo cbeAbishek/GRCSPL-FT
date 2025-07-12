@@ -58,6 +58,81 @@ const CartPage: React.FC<CartPageProps> = ({
         </div>
       ) : (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+           {/* Order Summary */}
+          <div className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100 h-fit">
+            <h2 className="text-xl font-bold text-gray-900 mb-6">
+              Order Summary
+            </h2>
+            <div className="space-y-3 mb-6">
+              {cart.map((item) => (
+                <div
+                  key={item.product.code}
+                  className="flex justify-between text-sm"
+                >
+                  <span className="text-gray-600">
+                    {item.product.name} × {item.quantity}
+                  </span>
+                  <span className="font-semibold">
+                    ₹{(item.product.discountPrice * item.quantity).toFixed(2)}
+                  </span>
+                </div>
+              ))}
+            </div>
+            <div className="border-t border-gray-200 pt-4 mb-4">
+              <div className="flex justify-between items-center mb-2">
+                <span className="text-gray-600">Subtotal</span>
+                <span className="font-semibold">
+                  ₹{getCartTotal().toFixed(2)}
+                </span>
+              </div>
+              {/* <div className="flex justify-between items-center mb-2">
+                <div className="flex items-center">
+                  <Package className="w-4 h-4 mr-2 text-gray-600" />
+                  <span className="text-gray-600">Total Weight</span>
+                </div>
+                <span className="font-semibold">
+                  {getTotalWeight()}g
+                </span>
+              </div> */}
+            </div>
+            <div className="border-t border-gray-200 pt-4 mb-6">
+              <div className="flex justify-between items-center">
+                <span className="text-lg font-bold text-gray-900">Total</span>
+                <span className="text-2xl font-bold text-[#39b54b]">
+                  ₹{getCartTotal().toFixed(2)}
+                </span>
+              </div>
+              <div className="text-xs text-gray-500 mt-1">
+                (Transport charges will be calculated at checkout)
+              </div>
+            </div>
+            <button
+              onClick={() => setCurrentPage("checkout")}
+              className="w-full bg-gradient-to-r from-[#39b54b] to-[#2da03e] text-white py-4 rounded-xl font-semibold text-lg hover:shadow-lg transition-all duration-300 flex items-center justify-center space-x-2"
+            >
+              <span>Proceed to Checkout</span>
+            </button>
+            <button
+              onClick={() => {
+                const cartDetails = cart.map(item => 
+                  `${item.product.name} (${item.product.category}) - Qty: ${item.quantity} - ₹${item.product.discountPrice} each`
+                ).join('\n');
+                
+                const message = `Hi! I would like to enquire about the following products:\n\n${cartDetails}\n\nTotal Amount: ₹${getCartTotal().toFixed(2)}\n\nPlease provide more details.`;
+                
+                const whatsappUrl = `https://api.whatsapp.com/send/?phone=919566372450&text=${encodeURIComponent(message)}`;
+                window.open(whatsappUrl, '_blank');
+              }}
+              className="w-full mt-3 bg-green-600 text-white py-3 rounded-xl font-semibold hover:bg-green-700 transition-all duration-300 flex items-center justify-center space-x-2"
+            >
+              <img
+                src="/WhatsApp.Webp"
+                alt="WhatsApp Icon"
+                className="w-7 h-7"
+              />
+              <span>Enquire on WhatsApp</span>
+            </button>
+          </div>
           {/* Cart Items */}
           <div className="lg:col-span-2 space-y-4">
             {cart.map((item) => (
@@ -135,81 +210,7 @@ const CartPage: React.FC<CartPageProps> = ({
               </div>
             ))}
           </div>
-          {/* Order Summary */}
-          <div className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100 h-fit">
-            <h2 className="text-xl font-bold text-gray-900 mb-6">
-              Order Summary
-            </h2>
-            <div className="space-y-3 mb-6">
-              {cart.map((item) => (
-                <div
-                  key={item.product.code}
-                  className="flex justify-between text-sm"
-                >
-                  <span className="text-gray-600">
-                    {item.product.name} × {item.quantity}
-                  </span>
-                  <span className="font-semibold">
-                    ₹{(item.product.discountPrice * item.quantity).toFixed(2)}
-                  </span>
-                </div>
-              ))}
-            </div>
-            <div className="border-t border-gray-200 pt-4 mb-4">
-              <div className="flex justify-between items-center mb-2">
-                <span className="text-gray-600">Subtotal</span>
-                <span className="font-semibold">
-                  ₹{getCartTotal().toFixed(2)}
-                </span>
-              </div>
-              {/* <div className="flex justify-between items-center mb-2">
-                <div className="flex items-center">
-                  <Package className="w-4 h-4 mr-2 text-gray-600" />
-                  <span className="text-gray-600">Total Weight</span>
-                </div>
-                <span className="font-semibold">
-                  {getTotalWeight()}g
-                </span>
-              </div> */}
-            </div>
-            <div className="border-t border-gray-200 pt-4 mb-6">
-              <div className="flex justify-between items-center">
-                <span className="text-lg font-bold text-gray-900">Total</span>
-                <span className="text-2xl font-bold text-[#39b54b]">
-                  ₹{getCartTotal().toFixed(2)}
-                </span>
-              </div>
-              <div className="text-xs text-gray-500 mt-1">
-                (Transport charges will be calculated at checkout)
-              </div>
-            </div>
-            <button
-              onClick={() => setCurrentPage("checkout")}
-              className="w-full bg-gradient-to-r from-[#39b54b] to-[#2da03e] text-white py-4 rounded-xl font-semibold text-lg hover:shadow-lg transition-all duration-300 flex items-center justify-center space-x-2"
-            >
-              <span>Proceed to Checkout</span>
-            </button>
-            <button
-              onClick={() => {
-                const cartDetails = cart.map(item => 
-                  `${item.product.name} (${item.product.category}) - Qty: ${item.quantity} - ₹${item.product.discountPrice} each`
-                ).join('\n');
-                
-                const message = `Hi! I would like to enquire about the following products:\n\n${cartDetails}\n\nTotal Amount: ₹${getCartTotal().toFixed(2)}\n\nPlease provide more details.`;
-                
-                const whatsappUrl = `https://api.whatsapp.com/send/?phone=919566372450&text=${encodeURIComponent(message)}`;
-                window.open(whatsappUrl, '_blank');
-              }}
-              className="w-full mt-3 bg-green-600 text-white py-3 rounded-xl font-semibold hover:bg-green-700 transition-all duration-300 flex items-center justify-center space-x-2"
-            >
-              <img
-                src="/WhatsApp.Webp"
-                alt="WhatsApp Icon"
-                className="w-7 h-7"
-              />
-              <span>Enquire on WhatsApp</span>
-            </button>
-          </div>
+         
         </div>
       )}
     </div>

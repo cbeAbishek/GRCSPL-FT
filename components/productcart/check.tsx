@@ -144,7 +144,7 @@ const handlepayment = async (
   setCurrentPage: (page: string) => void,
   setTransactionId: (id: string) => void
 ): Promise<void> => {
-  console.log("Payment handler customerInfo:", customerInfo);
+  //console.log("Payment handler customerInfo:", customerInfo);
   e.preventDefault();
   const subtotal = getCartTotal();
   const totalAmount = (subtotal + transportCharges).toFixed(2);
@@ -219,7 +219,8 @@ const handlepayment = async (
         await captureRes.json();
       } catch (err) {
         console.log(
-        "Payment was successful but capture failed. Proceeding to next step."
+          
+        //"Payment was successful but capture failed. Proceeding to next step."
         );
       }
 
@@ -239,7 +240,7 @@ const handlepayment = async (
         await postorder(orderData);
         setCurrentPage("success");
       } catch (error) {
-        alert(
+        console.log(
         "Payment successful but failed to submit order. Please contact support."
         );
       }

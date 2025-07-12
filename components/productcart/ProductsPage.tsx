@@ -1,14 +1,6 @@
 // components/ProductsPage.tsx
 import React, { useState } from "react";
-import {
-  Grid,
-  List,
-  Search,
-  Eye,
-  Star,
-  Plus,
-  Trash2,
-} from "lucide-react";
+import { Grid, List, Search, Eye, Star, Plus, Trash2 } from "lucide-react";
 
 interface Product {
   name: string;
@@ -60,6 +52,7 @@ const ProductsPage: React.FC<ProductsPageProps> = ({
     <div className="p-4 md:p-6 relative">
       {/* Search Bar & View Toggle */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
+        {/* Search Input */}
         <div className="relative w-full sm:w-80">
           <input
             type="text"
@@ -70,7 +63,9 @@ const ProductsPage: React.FC<ProductsPageProps> = ({
           />
           <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
         </div>
-        <div className="items-center space-x-4 bg-gray-50 rounded-2xl p-2 hidden sm:block">
+
+        {/* View Mode Toggle */}
+        <div className="items-center space-x-4 bg-gray-50 rounded-2xl p-2 ">
           <span className="text-sm text-gray-600 font-medium px-2">View:</span>
           <button
             className={`p-2.5 rounded-xl transition-all duration-300 ${
@@ -105,10 +100,12 @@ const ProductsPage: React.FC<ProductsPageProps> = ({
           <p className="text-gray-500">Try adjusting your search terms</p>
         </div>
       ) : viewMode === "grid" ? (
+        // Grid view
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {filteredProducts.map((product) => (
             <div
               key={product.code}
+              id={`product-card-${product.code}`}
               className="group bg-white rounded-3xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 border border-gray-100"
             >
               {/* Product Image */}
@@ -136,10 +133,7 @@ const ProductsPage: React.FC<ProductsPageProps> = ({
                 </div>
                 {/* Quick View Overlay */}
                 <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-                  <button
-                    onClick={() => openProductModal(product)}
-                    className="bg-white text-gray-900 px-6 py-3 rounded-full font-semibold flex items-center space-x-2 transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300"
-                  >
+                  <button onClick={() => openProductModal(product)}>
                     <Eye className="w-4 h-4" />
                     <span>Quick View</span>
                   </button>
@@ -195,15 +189,25 @@ const ProductsPage: React.FC<ProductsPageProps> = ({
                     </button>
                     <button
                       onClick={() => {
-                        if (product.inStock) {
-                          addToCart(product);
+                      if (product.inStock) {
+                        addToCart(product);
+                        const button = document.getElementById(
+                        `add-to-cart-btn-${product.code}`
+                        );
+                        if (button) {
+                        button.classList.add("bg-red-500");
+                        setTimeout(() => {
+                          button.classList.remove("bg-red-500");
+                        }, 1000);
                         }
+                      }
                       }}
+                      id={`add-to-cart-btn-${product.code}`}
                       disabled={!product.inStock}
                       className={`flex-1 px-3 py-2 text-sm rounded-xl transition-all duration-300 ${
-                        product.inStock
-                          ? "bg-gradient-to-r from-[#39b54b] to-[#2da03e] text-white hover:shadow-lg"
-                          : "bg-gray-300 text-gray-500 cursor-not-allowed"
+                      product.inStock
+                        ? "bg-gradient-to-r from-[#39b54b] to-[#2da03e] text-white hover:shadow-lg"
+                        : "bg-gray-300 text-gray-500 cursor-not-allowed"
                       }`}
                     >
                       Add to Cart
@@ -222,7 +226,100 @@ const ProductsPage: React.FC<ProductsPageProps> = ({
               key={product.code}
               className="bg-white rounded-3xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 flex flex-col sm:flex-row border border-gray-100"
             >
-              <div className="sm:w-1/3 aspect-square sm:aspect-auto bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center p-6 relative">
+              {/* Mobile view: compact layout */}
+              <div className="flex sm:hidden items-center w-full border-b border-gray-100">
+                <div className="h-[100px] w-1/3 bg-gradient-to-br from-gray-50 to-gray-100 p-2 relative flex items-center justify-center">
+                  <img
+                    src={product.src}
+                    alt={product.name}
+                    className="max-h-full object-contain"
+                  />
+                  {calculateDiscount(product.mrp, product.discountPrice) >
+                    0 && (
+                    <div className="absolute top-1 left-1 bg-gradient-to-r from-red-500 to-pink-500 text-white px-2 py-0.5 rounded-full text-xs font-bold">
+                      {calculateDiscount(product.mrp, product.discountPrice)}%
+                      OFF
+                    </div>
+                  )}
+                </div>
+                <div className="w-2/3 p-3 flex flex-col justify-between h-[100px]">
+                  <div>
+                    <h3 className="text-sm font-bold text-gray-800 line-clamp-1">
+                      {product.name}
+                    </h3>
+                    <div className="flex items-center space-x-2 mt-1">
+                      <span className="text-xs font-medium text-[#39b54b]">
+                        {product.category}
+                      </span>
+                      <span
+                        className={`text-xs ${
+                          product.inStock ? "text-green-600" : "text-red-600"
+                        }`}
+                      >
+                        {product.inStock ? "In Stock" : "Out of Stock"}
+                      </span>
+                    </div>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <div>
+                      <span className="text-xs text-gray-400 line-through">
+                        ₹{product.mrp.toFixed(2)}
+                      </span>
+                      <span className="text-sm font-bold text-gray-900 block">
+                        ₹{product.discountPrice.toFixed(2)}
+                      </span>
+                    </div>
+                    <div className="flex space-x-1">
+                      <button
+                        onClick={() => openProductModal(product)}
+                        className="p-1.5 text-[#39b54b] border border-[#39b54b] rounded-lg hover:bg-[#39b54b] hover:text-white transition-all"
+                      >
+                        <Eye className="w-3 h-3" />
+                      </button>
+                        <button
+                        onClick={() => {
+                          if (product.inStock) {
+                          addToCart(product);
+                          const card = document.getElementById(
+                            `product-card-${product.code}`
+                          );
+                          const button = document.getElementById(
+                            `add-to-cart-btn-${product.code}`
+                          );
+                          if (card) {
+                            card.classList.add("ring-4", "ring-[#39b54b]");
+                            setTimeout(() => {
+                            card.classList.remove(
+                              "ring-4",
+                              "ring-[#39b54b]"
+                            );
+                            }, 1000);
+                          }
+                          if (button) {
+                            button.classList.add("bg-red-500");
+                            setTimeout(() => {
+                            button.classList.remove("bg-red-500");
+                            }, 10000);
+                          }
+                          }
+                        }}
+                        id={`add-to-cart-btn-${product.code}`}
+                        disabled={!product.inStock}
+                        className={`p-1.5 rounded-lg transition-all ${
+                          product.inStock
+                          ? "bg-[#39b54b] text-white"
+                          : "bg-gray-300 text-gray-500 cursor-not-allowed"
+                        }`}
+                        >
+                        <Plus className="w-3 h-3" />
+                        </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Desktop view: original layout */}
+              <div className="hidden sm:block sm:w-1/3 aspect-square sm:aspect-auto bg-gradient-to-br from-gray-50 to-gray-100 sm:flex items-center justify-center p-6 relative">
                 <img
                   src={product.src}
                   alt={product.name}
@@ -234,7 +331,7 @@ const ProductsPage: React.FC<ProductsPageProps> = ({
                   </div>
                 )}
               </div>
-              <div className="p-6 sm:w-2/3 flex flex-col justify-between">
+              <div className="hidden sm:flex p-6 sm:w-2/3 flex-col justify-between">
                 <div>
                   <div className="flex items-center justify-between mb-3">
                     <span className="text-xs font-semibold text-[#39b54b] bg-[#39b54b]/10 px-2 py-1 rounded-full">
@@ -293,8 +390,18 @@ const ProductsPage: React.FC<ProductsPageProps> = ({
                       onClick={() => {
                         if (product.inStock) {
                           addToCart(product);
+                          const button = document.getElementById(
+                            `add-to-cart-${product.code}`
+                          );
+                          if (button) {
+                            button.classList.add("bg-red-500");
+                            setTimeout(() => {
+                              button.classList.remove("bg-red-500");
+                            }, 1000);
+                          }
                         }
                       }}
+                      id={`add-to-cart-${product.code}`}
                       disabled={!product.inStock}
                       className={`px-4 py-2 rounded-xl transition-all duration-300 flex items-center space-x-2 ${
                         product.inStock
@@ -302,7 +409,7 @@ const ProductsPage: React.FC<ProductsPageProps> = ({
                           : "bg-gray-300 text-gray-500 cursor-not-allowed"
                       }`}
                     >
-                      <Trash2 className="w-4 h-4" />
+                      <Plus className="w-4 h-4" />
                       <span>Add to Cart</span>
                     </button>
                   </div>
