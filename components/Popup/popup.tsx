@@ -50,7 +50,7 @@ const OfferPopupCard = () => {
 
   const handleClaimOffer = () => {
     
-    window.location.href = "https://pages.razorpay.com/stores/st_QD6JmHuMK8AMiy";
+    window.location.href = "/products";
     confetti({
       particleCount: 120,
       spread: 80,

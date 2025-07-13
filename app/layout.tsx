@@ -6,7 +6,7 @@ import Header from "@/components/layout/header";
 import Footer from "@/components/layout/footer";
 import { LanguageProvider } from "@/components/language-provider";
 import { ThemeProvider } from "@/components/theme-provider";
-import FMCGPreloader from "@/components/preloader";
+
 
 
 const inter = Inter({ subsets: ["latin"] });
@@ -121,7 +121,7 @@ export default function RootLayout({
           enableSystem={false}
         >
           <LanguageProvider>
-            <FMCGPreloader />
+            
             <div className="flex min-h-screen flex-col">
               <Header />
               {/* AnnouncementBanner can be added here if needed */}

@@ -42,11 +42,29 @@ const ProductsPage: React.FC<ProductsPageProps> = ({
     return Math.round(((mrp - discountPrice) / mrp) * 100);
   };
 
+  React.useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth < 768) {
+        setViewMode("list");
+      } else {
+        setViewMode("grid");
+      }
+    };
+
+    handleResize(); // Set initial view mode based on current window size
+    window.addEventListener("resize", handleResize);
+
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, []);
+
   const filteredProducts = products.filter(
     (product) =>
       product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       product.category.toLowerCase().includes(searchQuery.toLowerCase())
   );
+
 
   return (
     <div className="p-4 md:p-6 relative">
@@ -133,9 +151,12 @@ const ProductsPage: React.FC<ProductsPageProps> = ({
                 </div>
                 {/* Quick View Overlay */}
                 <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-                  <button onClick={() => openProductModal(product)}>
-                    <Eye className="w-4 h-4" />
-                    <span>Quick View</span>
+                  <button
+                  onClick={() => openProductModal(product)}
+                  className="flex flex-col items-center space-y-1 text-white active:scale-95 transition-transform duration-200"
+                  >
+                  <Eye className="w-6 h-6" />
+                  <span className="text-sm font-medium">Quick View</span>
                   </button>
                 </div>
               </div>
@@ -238,7 +259,7 @@ const ProductsPage: React.FC<ProductsPageProps> = ({
                     0 && (
                     <div className="absolute top-1 left-1 bg-gradient-to-r from-red-500 to-pink-500 text-white px-2 py-0.5 rounded-full text-xs font-bold">
                       {calculateDiscount(product.mrp, product.discountPrice)}%
-                      OFF
+                      
                     </div>
                   )}
                 </div>

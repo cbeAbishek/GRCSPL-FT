@@ -1,11 +1,16 @@
 "use client"
 import { useState, useEffect } from 'react';
 import { Package, Truck, Users, ShoppingCart, Zap, Network } from 'lucide-react';
+import { usePathname } from 'next/navigation';
 
 const FMCGPreloader = () => {
   const [progress, setProgress] = useState(0);
   const [currentMessage, setCurrentMessage] = useState(0);
   const [isVisible, setIsVisible] = useState(true);
+  const pathname = usePathname();
+  
+  // Only show the preloader on the home page
+  if (pathname !== '/') return null;
 
   const messages = [
     "Connecting your network...",
@@ -44,7 +49,7 @@ const FMCGPreloader = () => {
   const CurrentIcon = icons[currentMessage];
 
   return (
-    <div className="fixed inset-0 bg-gradient-to-br from-green-50 via-white to-green-100 flex items-center justify-center z-50">
+     <div className="fixed inset-0 bg-gradient-to-br from-green-50 via-white to-green-100 flex items-center justify-center z-50">
       {/* Animated background particles */}
       {/* <div className="absolute inset-0 overflow-hidden">
         {[...Array(20)].map((_, i) => (

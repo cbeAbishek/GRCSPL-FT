@@ -6,10 +6,13 @@ import TrustBadges from "@/components/home/trust-badges"
 import CallToAction from "@/components/home/call-to-action"
 import OfferPopupCard from "@/components/Popup/popup"
 import { AiChatbot } from "@/components/chatbot";
+import FMCGPreloader from "@/components/preloader";
 
 export default function Home() {
   return (
     <div className="flex flex-col gap-16">
+      <FMCGPreloader />
+      {/* Uncomment the following lines if you want to include the chatbot and offer popup card */}
       <AiChatbot />
       <OfferPopupCard />
       <Hero />

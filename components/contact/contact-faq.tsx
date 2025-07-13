@@ -13,7 +13,7 @@ const faqs = [
   {
     question: "What are your office hours?",
     answer:
-      "Our main office in Chennai is open Monday to Friday from 9:00 AM to 6:00 PM, and Saturday from 10:00 AM to 2:00 PM. We are closed on Sundays and public holidays.",
+      "Our main office in Coimbatore is open Monday to Friday from 9:00 AM to 6:00 PM, and Saturday from 10:00 AM to 2:00 PM. We are closed on Sundays and public holidays.",
   },
   {
     question: "How can I order products?",

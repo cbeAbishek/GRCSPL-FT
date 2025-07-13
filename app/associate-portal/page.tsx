@@ -179,6 +179,13 @@ export default function TrendyLoginPage() {
                 </div>
                 <h2 className="text-3xl font-bold text-white mb-2">{t.title}</h2>
                 <p className="text-gray-400">{t.subtitle}</p>
+                <button
+                  className="mt-4 px-6 py-3 bg-gradient-to-r from-[#39b54b] to-emerald-500 text-white font-semibold rounded-2xl shadow-lg hover:from-emerald-500 hover:to-[#39b54b] transition-all duration-300"
+                  onClick={() => window.location.href = '/register'}
+                >
+                  Pre-Register Now
+                </button>
+                
               </div>
 
               {/* <form className="space-y-6">

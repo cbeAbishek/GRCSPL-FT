@@ -48,7 +48,7 @@ interface CheckoutPageProps {
 // Calculate transport charges based on weight
 const calculateTransportCharges = (totalWeight: number): number => {
   if (totalWeight <= 500) {
-    return 1;
+    return 40;
   } else if (totalWeight <= 1000) {
     return 60;
   } else if (totalWeight <= 2000) {
@@ -403,67 +403,105 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({
                 autoComplete="tel"
               />
             </div>
+
+             {/* Address fields */}
             <div>
               <label
-                htmlFor="customer-address"
-                className="block text-sm font-medium text-gray-700 mb-2"
+              htmlFor="customer-address"
+              className="block text-sm font-medium text-gray-700 mb-2"
               >
-                Address
+              Address
               </label>
               <textarea
-                id="customer-address"
-                name="street-address"
-                value={customerInfo.address}
-                onChange={(e) =>
-                  handleCustomerInfoChange("address", e.target.value)
-                }
-                rows={3}
-                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#39b54b] focus:border-[#39b54b]"
-                placeholder="Enter your full address"
-                autoComplete="street-address"
+              id="customer-address"
+              name="street-address"
+              value={customerInfo.address}
+              onChange={(e) =>
+                handleCustomerInfoChange("address", e.target.value)
+              }
+              rows={3}
+              className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#39b54b] focus:border-[#39b54b]"
+              placeholder="Enter your full address"
+              autoComplete="street-address"
               />
             </div>
+            {/* City and Pincode fields */}
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label
-                  htmlFor="customer-city"
-                  className="block text-sm font-medium text-gray-700 mb-2"
-                >
-                  City
-                </label>
-                <input
-                  id="customer-city"
-                  name="address-level2"
-                  type="text"
-                  value={customerInfo.city}
-                  onChange={(e) =>
-                    handleCustomerInfoChange("city", e.target.value)
-                  }
-                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#39b54b] focus:border-[#39b54b]"
-                  placeholder="City"
-                  autoComplete="address-level2"
-                />
+              <label
+                htmlFor="customer-city"
+                className="block text-sm font-medium text-gray-700 mb-2"
+              >
+                City
+              </label>
+              <input
+                id="customer-city"
+                name="address-level2"
+                type="text"
+                value={customerInfo.city}
+                onChange={(e) =>
+                handleCustomerInfoChange("city", e.target.value)
+                }
+                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#39b54b] focus:border-[#39b54b]"
+                placeholder="City"
+                autoComplete="address-level2"
+              />
               </div>
               <div>
-                <label
-                  htmlFor="customer-pincode"
-                  className="block text-sm font-medium text-gray-700 mb-2"
-                >
-                  Pincode
-                </label>
-                <input
-                  id="customer-pincode"
-                  name="postal-code"
-                  type="text"
-                  value={customerInfo.pincode}
-                  onChange={(e) =>
-                    handleCustomerInfoChange("pincode", e.target.value)
-                  }
-                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#39b54b] focus:border-[#39b54b]"
-                  placeholder="Pincode"
-                  autoComplete="postal-code"
-                />
+              <label
+                htmlFor="customer-pincode"
+                className="block text-sm font-medium text-gray-700 mb-2"
+              >
+                Pincode
+              </label>
+              <input
+                id="customer-pincode"
+                name="postal-code"
+                type="text"
+                value={customerInfo.pincode}
+                onChange={(e) =>
+                handleCustomerInfoChange("pincode", e.target.value)
+                }
+                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#39b54b] focus:border-[#39b54b]"
+                placeholder="Pincode"
+                autoComplete="postal-code"
+              />
               </div>
+            </div>
+            {/* Auto-fill location button */}
+            <div className="mt-4">
+              <button
+              onClick={async () => {
+                if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                  async (position) => {
+                  const { latitude, longitude } = position.coords;
+                  try {
+                    const response = await fetch(
+                    `https://geocode.maps.co/reverse?lat=${latitude}&lon=${longitude}&api_key=${process.env.NEXT_PUBLIC_LOCATION_API_KEY}`
+                    );
+                    const data = await response.json();
+                    if (data && data.address) {
+                    handleCustomerInfoChange("city", data.address.city || "");
+                    handleCustomerInfoChange("pincode", data.address.postcode || "");
+                    handleCustomerInfoChange("address", data.display_name || "");
+                    }
+                  } catch (error) {
+                    console.error("Error fetching location:", error);
+                  }
+                  },
+                  (error) => {
+                  console.error("Geolocation error:", error);
+                  }
+                );
+                } else {
+                console.error("Geolocation is not supported by this browser.");
+                }
+              }}
+              className="px-4 py-2 bg-[#39b54b] text-white rounded-xl hover:bg-[#2da03e] transition-all"
+              >
+              Auto-fill Location
+              </button>
             </div>
           </div>
         </div>

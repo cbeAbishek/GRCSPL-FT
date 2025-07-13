@@ -6,7 +6,7 @@ import CartPage from "@/components/productcart/CartPage";
 import CheckoutPage from "@/components/productcart/check";
 import SuccessPage from "@/components/productcart/SuccessPage";
 import { Star, X, ShoppingCart, Award, Zap, Users } from "lucide-react";
-import OfferPopupCard from "@/components/Popup/sidepopup";
+//import OfferPopupCard from "@/components/Popup/sidepopup";
 
 // Define types based on your data
 export interface Product {
@@ -779,7 +779,7 @@ const ProductGrid = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Offer Popup Card */}
-      <OfferPopupCard />
+      {/* <OfferPopupCard /> */}
       {/* Product Detail Modal */}
       {/* Header */}
       <header className="bg-white shadow-sm border-b border-green-700 sticky top-0 z-10">

@@ -31,10 +31,10 @@ export default function ContactInfo() {
                 +91 892 553 2450
               </a>
               <br />
-              Support:{" "}
+              {/* Support:{" "}
               <a href="tel:+918000000001" className="hover:text-[#39b54b]">
                 +91 8000 000 001
-              </a>
+              </a> */}
             </p>
           </div>
         </div>

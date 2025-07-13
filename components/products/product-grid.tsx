@@ -37,7 +37,7 @@ const productsRaw = [
       src: "/product/Home/1.png",
       code: "HN1001",
       mrp: 215.0,
-      discountPrice: 195.0,
+      discountPrice: 1.0,
       businessValue: 47,
       description:
         "An advanced liquid detergent that effectively removes stains while being gentle on fabrics, leaving clothes fresh and clean.",
