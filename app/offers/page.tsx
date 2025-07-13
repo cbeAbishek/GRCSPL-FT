@@ -23,7 +23,7 @@ export default function OffersPage() {
         discount="Up to 50% OFF"
         validity="Valid until 20th October 2025"
         ctaText="View All Offers"
-        ctaLink="https://pages.razorpay.com/stores/st_QD6JmHuMK8AMiy"
+        ctaLink="/products"
       />
       {/* <div className="mt-8">
         <PromotionsList />
