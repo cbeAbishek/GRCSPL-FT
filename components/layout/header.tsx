@@ -229,12 +229,16 @@ export default function Header() {
               </div>
 
               <div className="flex space-x-4 pt-2">
-                <Button className="flex-1 bg-[#39b54b] hover:bg-[#2da03e]">
+                <a
+                  href="tel:+918925532450"
+                  className="flex-1 bg-[#39b54b] hover:bg-[#2da03e] text-white flex items-center justify-center py-2 rounded"
+                >
                   <Phone size={16} className="mr-2" />
                   Call Us
-                </Button>
+                </a>
                 <Button
                   variant="outline"
+                  onClick={() => window.open("https://wa.me/918925532450")}
                   className="flex-1 border-[#39b54b] text-[#39b54b]"
                 >
                   <MessageSquare size={16} className="mr-2" />

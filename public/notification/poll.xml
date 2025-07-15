@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<poll>
+    <question>What feature would you like to see next on our site?</question>
+    <options>
+        <option id="1">Improved User Interface</option>
+        <option id="2">Faster Load Times</option>
+        <option id="3">More Payment Options</option>
+        <option id="4">Better Customer Support</option>
+    </options>
+    <settings>
+        <allowMultipleVotes>ture</allowMultipleVotes>
+        <showResultsAfterVote>true</showResultsAfterVote>
+    </settings>
+</poll>

@@ -1,4 +1,3 @@
-// components/ProductsPage.tsx
 import React, { useState } from "react";
 import { Grid, List, Search, Eye, Star, Plus, Trash2 } from "lucide-react";
 

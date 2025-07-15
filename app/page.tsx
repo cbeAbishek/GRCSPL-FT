@@ -12,14 +12,12 @@ export default function Home() {
   return (
     <div className="flex flex-col gap-16">
       <FMCGPreloader />
-      {/* Uncomment the following lines if you want to include the chatbot and offer popup card */}
       <AiChatbot />
       <OfferPopupCard />
       <Hero />
       <Benefits />
       <FeaturedProducts />
       <Testimonials />
-      {/* <TrustBadges /> */}
       <CallToAction />
     </div>
   )
