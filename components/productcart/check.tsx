@@ -385,23 +385,28 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({
             </div>
             <div>
               <label
-                htmlFor="customer-phone"
-                className="block text-sm font-medium text-gray-700 mb-2"
+              htmlFor="customer-phone"
+              className="block text-sm font-medium text-gray-700 mb-2"
               >
-                Phone
+              Phone
               </label>
-              <input
+                <input
                 id="customer-phone"
                 name="tel"
                 type="tel"
-                value={customerInfo.phone}
-                onChange={(e) =>
-                  handleCustomerInfoChange("phone", e.target.value)
-                }
+                value={customerInfo.phone.replace(/^\+91/, "")}
+                onChange={(e) => {
+                  // Remove all non-digit characters
+                  let input = e.target.value.replace(/[^0-9]/g, "");
+                  // Ensure only 10 digits
+                  if (input.length > 10) input = input.slice(0, 10);
+                  handleCustomerInfoChange("phone", `+91${input}`);
+                }}
                 className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#39b54b] focus:border-[#39b54b]"
-                placeholder="Enter your phone number"
+                placeholder="Enter your 10-digit phone number"
                 autoComplete="tel"
-              />
+                maxLength={10}
+                />
             </div>
 
              {/* Address fields */}
