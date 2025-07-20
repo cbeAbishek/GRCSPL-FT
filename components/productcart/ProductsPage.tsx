@@ -64,6 +64,18 @@ const ProductsPage: React.FC<ProductsPageProps> = ({
       product.category.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
+  // Track which Add to Cart buttons are clicked
+  const [clickedCart, setClickedCart] = React.useState<string[]>([]);
+
+  const handleAddToCart = (product: Product) => {
+    if (product.inStock) {
+      addToCart(product);
+      setClickedCart((prev) => [...prev, product.code]);
+      setTimeout(() => {
+        setClickedCart((prev) => prev.filter((code) => code !== product.code));
+      }, 100000);
+    }
+  };
 
   return (
     <div className="p-4 md:p-6 relative">
@@ -151,11 +163,11 @@ const ProductsPage: React.FC<ProductsPageProps> = ({
                 {/* Quick View Overlay */}
                 <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
                   <button
-                  onClick={() => openProductModal(product)}
-                  className="flex flex-col items-center space-y-1 text-white active:scale-95 transition-transform duration-200"
+                    onClick={() => openProductModal(product)}
+                    className="flex flex-col items-center space-y-1 text-white active:scale-95 transition-transform duration-200"
                   >
-                  <Eye className="w-6 h-6" />
-                  <span className="text-sm font-medium">Quick View</span>
+                    <Eye className="w-6 h-6" />
+                    <span className="text-sm font-medium">Quick View</span>
                   </button>
                 </div>
               </div>
@@ -208,26 +220,15 @@ const ProductsPage: React.FC<ProductsPageProps> = ({
                       View Details
                     </button>
                     <button
-                      onClick={() => {
-                      if (product.inStock) {
-                        addToCart(product);
-                        const button = document.getElementById(
-                        `add-to-cart-btn-${product.code}`
-                        );
-                        if (button) {
-                        button.classList.add("bg-red-500");
-                        setTimeout(() => {
-                          button.classList.remove("bg-red-500");
-                        }, 1000);
-                        }
-                      }
-                      }}
+                      onClick={() => handleAddToCart(product)}
                       id={`add-to-cart-btn-${product.code}`}
                       disabled={!product.inStock}
                       className={`flex-1 px-3 py-2 text-sm rounded-xl transition-all duration-300 ${
-                      product.inStock
-                        ? "bg-gradient-to-r from-[#39b54b] to-[#2da03e] text-white hover:shadow-lg"
-                        : "bg-gray-300 text-gray-500 cursor-not-allowed"
+                        product.inStock
+                          ? clickedCart.includes(product.code)
+                            ? "bg-red-500 text-white"
+                            : "bg-gradient-to-r from-[#39b54b] to-[#2da03e] text-white hover:shadow-lg"
+                          : "bg-gray-300 text-gray-500 cursor-not-allowed"
                       }`}
                     >
                       Add to Cart
@@ -258,7 +259,6 @@ const ProductsPage: React.FC<ProductsPageProps> = ({
                     0 && (
                     <div className="absolute top-1 left-1 bg-gradient-to-r from-red-500 to-pink-500 text-white px-2 py-0.5 rounded-full text-xs font-bold">
                       {calculateDiscount(product.mrp, product.discountPrice)}%
-                      
                     </div>
                   )}
                 </div>
@@ -296,43 +296,20 @@ const ProductsPage: React.FC<ProductsPageProps> = ({
                       >
                         <Eye className="w-3 h-3" />
                       </button>
-                        <button
-                        onClick={() => {
-                          if (product.inStock) {
-                          addToCart(product);
-                          const card = document.getElementById(
-                            `product-card-${product.code}`
-                          );
-                          const button = document.getElementById(
-                            `add-to-cart-btn-${product.code}`
-                          );
-                          if (card) {
-                            card.classList.add("ring-4", "ring-[#39b54b]");
-                            setTimeout(() => {
-                            card.classList.remove(
-                              "ring-4",
-                              "ring-[#39b54b]"
-                            );
-                            }, 1000);
-                          }
-                          if (button) {
-                            button.classList.add("bg-red-500");
-                            setTimeout(() => {
-                            button.classList.remove("bg-red-500");
-                            }, 10000);
-                          }
-                          }
-                        }}
+                      <button
+                        onClick={() => handleAddToCart(product)}
                         id={`add-to-cart-btn-${product.code}`}
                         disabled={!product.inStock}
                         className={`p-1.5 rounded-lg transition-all ${
                           product.inStock
-                          ? "bg-[#39b54b] text-white"
-                          : "bg-gray-300 text-gray-500 cursor-not-allowed"
+                            ? clickedCart.includes(product.code)
+                              ? "bg-red-500 text-white"
+                              : "bg-[#39b54b] text-white"
+                            : "bg-gray-300 text-gray-500 cursor-not-allowed"
                         }`}
-                        >
+                      >
                         <Plus className="w-3 h-3" />
-                        </button>
+                      </button>
                     </div>
                   </div>
                 </div>
@@ -407,25 +384,14 @@ const ProductsPage: React.FC<ProductsPageProps> = ({
                       <span>View</span>
                     </button>
                     <button
-                      onClick={() => {
-                        if (product.inStock) {
-                          addToCart(product);
-                          const button = document.getElementById(
-                            `add-to-cart-${product.code}`
-                          );
-                          if (button) {
-                            button.classList.add("bg-red-500");
-                            setTimeout(() => {
-                              button.classList.remove("bg-red-500");
-                            }, 1000);
-                          }
-                        }
-                      }}
+                      onClick={() => handleAddToCart(product)}
                       id={`add-to-cart-${product.code}`}
                       disabled={!product.inStock}
                       className={`px-4 py-2 rounded-xl transition-all duration-300 flex items-center space-x-2 ${
                         product.inStock
-                          ? "bg-gradient-to-r from-[#39b54b] to-[#2da03e] text-white hover:shadow-lg"
+                          ? clickedCart.includes(product.code)
+                            ? "bg-red-500 text-white"
+                            : "bg-gradient-to-r from-[#39b54b] to-[#2da03e] text-white hover:shadow-lg"
                           : "bg-gray-300 text-gray-500 cursor-not-allowed"
                       }`}
                     >

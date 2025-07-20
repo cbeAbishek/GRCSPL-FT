@@ -22,7 +22,6 @@ interface CartItem {
   product: any; // Replace 'any' with the actual type of your product
   quantity: number;
 }
-
 interface CustomerInfo {
   name: string;
   email: string;
@@ -31,7 +30,6 @@ interface CustomerInfo {
   city: string;
   pincode: string;
 }
-
 interface CheckoutPageProps {
   cart: CartItem[];
   customerInfo: CustomerInfo;
@@ -104,7 +102,7 @@ const formatOrderData = (
   return {
     customer: {
       name: customerInfo.name,
-      email: customerInfo.email,
+      email: customerInfo.email || "namtha@gmail.com",
       phone: customerInfo.phone,
       address: {
         street: customerInfo.address,
@@ -188,73 +186,73 @@ const handlepayment = async (
     const options: RazorpayOptions = {
       key: process.env.NEXT_PUBLIC_RAZORPAY_KEY || "default_key",
       key_secret:
-      process.env.NEXT_PUBLIC_RAZORPAY_KEY_SECRET || "default_key_secret",
+        process.env.NEXT_PUBLIC_RAZORPAY_KEY_SECRET || "default_key_secret",
       amount: parseFloat(totalAmount) * 100, // Convert total to paise
       currency: "INR",
       name: "GRCSPL",
       description: "Order Payment",
       handler: async function (response: RazorpayResponse): Promise<void> {
-      const transactionId = response.razorpay_payment_id;
-      setTransactionId(transactionId);
+        const transactionId = response.razorpay_payment_id;
+        setTransactionId(transactionId);
 
-      try {
-        const captureRes = await fetch(
-        `https://api.razorpay.com/v1/payments/${transactionId}/capture`,
-        {
-          method: "POST",
-          headers: {
-          "Content-Type": "application/x-www-form-urlencoded",
-          Authorization:
-            "Basic " +
-            btoa(
-            `${process.env.NEXT_PUBLIC_RAZORPAY_KEY}:${process.env.NEXT_PUBLIC_RAZORPAY_KEY_SECRET}`
-            ),
-          },
-          body: `amount=${parseFloat(totalAmount) * 100}&currency=INR`,
+        try {
+          const captureRes = await fetch(
+            `https://api.razorpay.com/v1/payments/${transactionId}/capture`,
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/x-www-form-urlencoded",
+                Authorization:
+                  "Basic " +
+                  btoa(
+                    `${process.env.NEXT_PUBLIC_RAZORPAY_KEY}:${process.env.NEXT_PUBLIC_RAZORPAY_KEY_SECRET}`
+                  ),
+              },
+              body: `amount=${parseFloat(totalAmount) * 100}&currency=INR`,
+            }
+          );
+          if (!captureRes.ok) {
+            throw new Error("Failed to capture payment");
+          }
+          await captureRes.json();
+        } catch (err) {
+          console
+            .log
+            //"Payment was successful but capture failed. Proceeding to next step."
+            ();
         }
+
+        const orderData = formatOrderData(
+          customerInfo,
+          cart,
+          getCartTotal,
+          transportCharges,
+          paymentMethod,
+          transactionId
         );
-        if (!captureRes.ok) {
-        throw new Error("Failed to capture payment");
+        if (typeof window !== "undefined") {
+          localStorage.setItem("addToCart", JSON.stringify(null));
         }
-        await captureRes.json();
-      } catch (err) {
-        console.log(
-          
-        //"Payment was successful but capture failed. Proceeding to next step."
-        );
-      }
 
-      const orderData = formatOrderData(
-        customerInfo,
-        cart,
-        getCartTotal,
-        transportCharges,
-        paymentMethod,
-        transactionId
-      );
-      if (typeof window !== "undefined") {
-        localStorage.setItem("addToCart", JSON.stringify(null));
-      }
-
-      try {
-        await postorder(orderData);
-        setCurrentPage("success");
-      } catch (error) {
-        console.log(
-        "Payment successful but failed to submit order. Please contact support."
-        );
-      }
+        try {
+          await postorder(orderData);
+          setCurrentPage("success");
+        } catch (error) {
+          console.log(
+            "Payment successful but failed to submit order. Please contact support."
+          );
+        }
       },
       prefill: {
-      name: customerInfo.name,
-      email: customerInfo.email,
-      contact: customerInfo.phone,
+        name: customerInfo.name,
+        email: customerInfo.email || "nmatha@gmail.com",
+        contact: customerInfo.phone,
       },
       notes: {
-      address: fullAddress,
+        address: fullAddress,
       },
       theme: {
-      color: "#39b54b",
+        color: "#39b54b",
       },
     };
     const pay = new (window as any).Razorpay(options);
@@ -294,7 +292,9 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({
     if (setParentTransportCharges) {
       setParentTransportCharges(charges);
     }
-  }, [cart, setParentTransportCharges]); // Calculate final total
+  }, [cart, setParentTransportCharges]);
+
+  // Calculate final total
   const getFinalTotal = () => {
     return getCartTotal() + transportCharges;
   };
@@ -309,7 +309,7 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({
           transportCharges,
           paymentMethod
         );
-
+        console.log("Order Data:", orderData);
         await postorder(orderData);
 
         // Clear the cart after successful order
@@ -326,10 +326,6 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({
     } else {
       handleCheckout();
     }
-  };
-  // Return transport charges for use in other components
-  const getTransportCharges = () => {
-    return transportCharges;
   };
 
   return (
@@ -368,7 +364,7 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({
                 htmlFor="customer-email"
                 className="block text-sm font-medium text-gray-700 mb-2"
               >
-                Email
+                Email (optional)
               </label>
               <input
                 id="customer-email"
@@ -379,18 +375,24 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({
                   handleCustomerInfoChange("email", e.target.value)
                 }
                 className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#39b54b] focus:border-[#39b54b]"
-                placeholder="Enter your email"
+                placeholder="Enter your email (optional)"
                 autoComplete="email"
               />
+              {!customerInfo.email && (
+                <p className="text-xs text-gray-500 mt-1">
+                  No email provided. We will use our company email for order
+                  updates.
+                </p>
+              )}
             </div>
             <div>
               <label
-              htmlFor="customer-phone"
-              className="block text-sm font-medium text-gray-700 mb-2"
+                htmlFor="customer-phone"
+                className="block text-sm font-medium text-gray-700 mb-2"
               >
-              Phone
+                Phone
               </label>
-                <input
+              <input
                 id="customer-phone"
                 name="tel"
                 type="tel"
@@ -406,107 +408,122 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({
                 placeholder="Enter your 10-digit phone number"
                 autoComplete="tel"
                 maxLength={10}
-                />
-            </div>
-
-             {/* Address fields */}
-            <div>
-              <label
-              htmlFor="customer-address"
-              className="block text-sm font-medium text-gray-700 mb-2"
-              >
-              Address
-              </label>
-              <textarea
-              id="customer-address"
-              name="street-address"
-              value={customerInfo.address}
-              onChange={(e) =>
-                handleCustomerInfoChange("address", e.target.value)
-              }
-              rows={3}
-              className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#39b54b] focus:border-[#39b54b]"
-              placeholder="Enter your full address"
-              autoComplete="street-address"
               />
-            </div>
-            {/* City and Pincode fields */}
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-              <label
-                htmlFor="customer-city"
-                className="block text-sm font-medium text-gray-700 mb-2"
-              >
-                City
-              </label>
-              <input
-                id="customer-city"
-                name="address-level2"
-                type="text"
-                value={customerInfo.city}
-                onChange={(e) =>
-                handleCustomerInfoChange("city", e.target.value)
-                }
-                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#39b54b] focus:border-[#39b54b]"
-                placeholder="City"
-                autoComplete="address-level2"
-              />
-              </div>
-              <div>
-              <label
-                htmlFor="customer-pincode"
-                className="block text-sm font-medium text-gray-700 mb-2"
-              >
-                Pincode
-              </label>
-              <input
-                id="customer-pincode"
-                name="postal-code"
-                type="text"
-                value={customerInfo.pincode}
-                onChange={(e) =>
-                handleCustomerInfoChange("pincode", e.target.value)
-                }
-                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#39b54b] focus:border-[#39b54b]"
-                placeholder="Pincode"
-                autoComplete="postal-code"
-              />
-              </div>
             </div>
             {/* Auto-fill location button */}
             <div className="mt-4">
               <button
-              onClick={async () => {
-                if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(
-                  async (position) => {
-                  const { latitude, longitude } = position.coords;
-                  try {
-                    const response = await fetch(
-                    `https://geocode.maps.co/reverse?lat=${latitude}&lon=${longitude}&api_key=${process.env.NEXT_PUBLIC_LOCATION_API_KEY}`
+                onClick={async () => {
+                  if (navigator.geolocation) {
+                    navigator.geolocation.getCurrentPosition(
+                      async (position) => {
+                        const { latitude, longitude } = position.coords;
+                        try {
+                          const response = await fetch(
+                            `https://geocode.maps.co/reverse?lat=${latitude}&lon=${longitude}&api_key=${process.env.NEXT_PUBLIC_LOCATION_API_KEY}`
+                          );
+                          const data = await response.json();
+                          if (data && data.address) {
+                            handleCustomerInfoChange(
+                              "city",
+                              data.address.city || ""
+                            );
+                            handleCustomerInfoChange(
+                              "pincode",
+                              data.address.postcode || ""
+                            );
+                            handleCustomerInfoChange(
+                              "address",
+                              data.display_name || ""
+                            );
+                          }
+                        } catch (error) {
+                          console.error("Error fetching location:", error);
+                        }
+                      },
+                      (error) => {
+                        console.error("Geolocation error:", error);
+                      }
                     );
-                    const data = await response.json();
-                    if (data && data.address) {
-                    handleCustomerInfoChange("city", data.address.city || "");
-                    handleCustomerInfoChange("pincode", data.address.postcode || "");
-                    handleCustomerInfoChange("address", data.display_name || "");
-                    }
-                  } catch (error) {
-                    console.error("Error fetching location:", error);
+                  } else {
+                    console.error(
+                      "Geolocation is not supported by this browser."
+                    );
                   }
-                  },
-                  (error) => {
-                  console.error("Geolocation error:", error);
-                  }
-                );
-                } else {
-                console.error("Geolocation is not supported by this browser.");
-                }
-              }}
-              className="px-4 py-2 bg-[#39b54b] text-white rounded-xl hover:bg-[#2da03e] transition-all"
+                }}
+                className="px-4 py-2 bg-[#39b54b] text-white rounded-xl hover:bg-[#2da03e] transition-all"
               >
-              Auto-fill Location
+                Auto-fill Location
               </button>
+              <p className="text-xs text-yellow-600 mt-2">
+                Hint: Please double check your address after auto-fill to ensure
+                accuracy.
+              </p>
+            </div>
+            {/* Address fields */}
+            <div>
+              <label
+                htmlFor="customer-address"
+                className="block text-sm font-medium text-gray-700 mb-2"
+              >
+                Address
+              </label>
+              <textarea
+                id="customer-address"
+                name="street-address"
+                value={customerInfo.address}
+                onChange={(e) =>
+                  handleCustomerInfoChange("address", e.target.value)
+                }
+                rows={3}
+                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#39b54b] focus:border-[#39b54b]"
+                placeholder="Enter your full address"
+                autoComplete="street-address"
+              />
+            </div>
+
+            {/* City and Pincode fields */}
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label
+                  htmlFor="customer-city"
+                  className="block text-sm font-medium text-gray-700 mb-2"
+                >
+                  City
+                </label>
+                <input
+                  id="customer-city"
+                  name="address-level2"
+                  type="text"
+                  value={customerInfo.city}
+                  onChange={(e) =>
+                    handleCustomerInfoChange("city", e.target.value)
+                  }
+                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#39b54b] focus:border-[#39b54b]"
+                  placeholder="City"
+                  autoComplete="address-level2"
+                />
+              </div>
+              <div>
+                <label
+                  htmlFor="customer-pincode"
+                  className="block text-sm font-medium text-gray-700 mb-2"
+                >
+                  Pincode
+                </label>
+                <input
+                  id="customer-pincode"
+                  name="postal-code"
+                  type="text"
+                  value={customerInfo.pincode}
+                  onChange={(e) =>
+                    handleCustomerInfoChange("pincode", e.target.value)
+                  }
+                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#39b54b] focus:border-[#39b54b]"
+                  placeholder="Pincode"
+                  autoComplete="postal-code"
+                />
+              </div>
             </div>
           </div>
         </div>
@@ -588,7 +605,7 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({
               Payment Method
             </h2>
             <div className="space-y-4 mb-6">
-              <label className="flex items-center p-4 border-2 border-gray-200 rounded-xl hover:border-[#39b54b] cursor-pointer transition-colors">
+              {/* <label className="flex items-center p-4 border-2 border-gray-200 rounded-xl hover:border-[#39b54b] cursor-pointer transition-colors">
                 <input
                   type="radio"
                   name="payment-method"
@@ -604,7 +621,7 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({
                     Pay when you receive your order
                   </p>
                 </div>
-              </label>
+              </label> */}
               <label className="flex items-center p-4 border-2 border-gray-200 rounded-xl hover:border-[#39b54b] cursor-pointer transition-colors">
                 <input
                   type="radio"
@@ -623,18 +640,16 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({
                 </div>
               </label>
             </div>
-            <button
+            {/* <button
               onClick={handleCODCheckout}
               disabled={
                 !customerInfo.name ||
-                !customerInfo.email ||
                 !customerInfo.phone ||
                 !customerInfo.address ||
                 !paymentMethod
               }
               className={`w-full py-4 rounded-xl font-semibold text-lg transition-all duration-300 flex items-center justify-center space-x-2 ${
                 customerInfo.name &&
-                customerInfo.email &&
                 customerInfo.phone &&
                 customerInfo.address &&
                 paymentMethod
@@ -644,7 +659,7 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({
             >
               <CheckCircle className="w-5 h-5" />
               <span>Place Order</span>
-            </button>
+            </button> */}
             {paymentMethod === "Online" && (
               <button
                 onClick={(e) =>
@@ -661,13 +676,11 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({
                 }
                 disabled={
                   !customerInfo.name ||
-                  !customerInfo.email ||
                   !customerInfo.phone ||
                   !customerInfo.address
                 }
                 className={`w-full py-4 mt-4 rounded-xl font-semibold text-lg transition-all duration-300 flex items-center justify-center space-x-2 ${
                   customerInfo.name &&
-                  customerInfo.email &&
                   customerInfo.phone &&
                   customerInfo.address
                     ? "bg-gradient-to-r from-[#39b54b] to-[#2da03e] text-white hover:shadow-lg"
@@ -676,8 +689,16 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({
               >
                 <CheckCircle className="w-5 h-5" />
                 <span>Payment now</span>
+                <img
+                  src="/icon/razorpay.svg"
+                  alt="Logo"
+                  className="h-6 ml-2 "
+                />
               </button>
             )}
+            <span className="ml-0 sm:ml-2 text-xs text-green-600 bg-green-50 px-2 py-1 rounded w-full flex justify-center items-center mt-2 sm:mt-0">
+              Secure payment by Razorpay
+            </span>
           </div>
         </div>
       </div>

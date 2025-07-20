@@ -836,27 +836,43 @@ const ProductGrid = () => {
               {currentPage === "products" && (
                 <button
                   onClick={() => setCurrentPage("cart")}
-                  className="relative p-2 text-gray-600 hover:text-[#39b54b] transition-colors"
+                  className={`relative p-2 rounded-full transition-all duration-300 shadow-md group ${
+                  cart.length > 0
+                    ? "bg-gradient-to-r from-[#39b54b]/30 to-[#2da03e]/30 text-[#39b54b] ring-2 ring-[#39b54b] animate-pulse"
+                    : "bg-white text-gray-600 hover:text-[#39b54b] hover:bg-gray-100"
+                  }`}
+                  title={cart.length > 0 ? "Click me for next step" : undefined}
                 >
                   <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-6 w-6"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-6 w-6"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
                   >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"
-                    />
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"
+                  />
                   </svg>
-
                   {cart.length > 0 && (
-                    <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
-                      {cart.reduce((acc, item) => acc + item.quantity, 0)}
+                  <>
+                    <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full w-6 h-6 flex items-center justify-center shadow-lg border-2 border-white">
+                    {cart.reduce((acc, item) => acc + item.quantity, 0)}
                     </span>
+                    {/* Floating hint out of screen, improved UI */}
+                    <span
+                    className="fixed left-auto right-6 top-20 bg-gradient-to-r from-yellow-400 to-yellow-200 text-yellow-900 text-base px-5 py-2 rounded-2xl shadow-xl font-semibold whitespace-nowrap z-[9999] animate-bounce border border-yellow-500"
+                    style={{
+                      pointerEvents: "none",
+                      boxShadow: "0 12px 32px rgba(255, 193, 7, 0.18)",
+                    }}
+                    >
+                    👉 Click here for next step!
+                    </span>
+                  </>
                   )}
                 </button>
               )}
