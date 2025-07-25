@@ -675,6 +675,19 @@ const ProductGrid = () => {
   const [transactionId, setTransactionId] = useState<string>("");
   const [transportCharge, setTransportCharge] = useState(0);
 
+   useEffect(() => {
+    const script = document.createElement("script");
+    script.defer = true;
+    script.src = "https://cloud.umami.is/script.js";
+    script.setAttribute("data-website-id", "6576a669-1fa5-4845-ab29-70071ad0da8b");
+    document.body.appendChild(script);
+
+    return () => {
+      document.body.removeChild(script);
+    };
+  }, []);
+
+
   // Add to cart
   const addToCart = (product: Product) => {
     setCart((prevCart) => {
